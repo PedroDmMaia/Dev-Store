@@ -1,3 +1,4 @@
+import AddToCartButton from '@/components/add-to-cart-button'
 import { api } from '@/data/api'
 import { Product as ProductType } from '@/data/types/product'
 import { Metadata } from 'next'
@@ -33,8 +34,15 @@ export async function generateMetadata({
   }
 }
 
-export function generateStaticParams() {
-  return [{ slug: 'moletom-ai-side' }]
+export async function generateStaticParams() {
+  const response = await api('/products/featured')
+  const products: ProductType[] = await response.json()
+
+  // return [{ slug: 'moletom-ai-side' }]
+
+  return products.map((product) => {
+    return { slug: product.slug }
+  })
 }
 
 export default async function Product({ params }: ProductProps) {
@@ -108,12 +116,7 @@ export default async function Product({ params }: ProductProps) {
           </div>
         </div>
 
-        <button
-          type="button"
-          className="mt-8 flex h-12 items-center justify-center rounded-full bg-emerald-600 font-semibold text-white"
-        >
-          Adicionar ao carrinho
-        </button>
+        <AddToCartButton productId={product.id} />
       </div>
     </div>
   )
